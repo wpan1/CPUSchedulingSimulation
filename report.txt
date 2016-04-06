@@ -1,0 +1,35 @@
+William Pan
+wpan1
+694945
+Computer Systems COMP30023 - Project One
+
+------------------------------------------------------------
+First Come First Serve
+	
+Summary: Since processes are added on a queue basis and
+they run until finish, there will always only be one process
+in memory at one time. (non-preemptive)
+
+Advantages: Only memory needed for the current process is 
+stored in memory. This simplifies memory management as
+there is no need for swap space.
+
+Disadvantages: The non-preemptive nature of the algorithm 
+causes long processes at the front of the queue to hog up
+running time, as shorter processes have to wait until
+these long processes at the front to finish.
+
+0 1 50 100
+0 2 10 1
+0 3 20 1
+0 4 30 1
+time 0, 1 running, numprocesses=1, numholes=1, memuseage=50%
+time 100, 2 running, numprocesses=1, numholes=1, memuseage=10%
+time 101, 3 running, numprocesses=1, numholes=1, memuseage=20%
+time 102, 4 running, numprocesses=1, numholes=1, memuseage=30%
+time 103, simulation finished
+
+As this simulation shows, short processes (2,3,4) have to wait
+until the long process (1) finishes. Thus, the FCFS scheduler
+has a long average wait time - making it useless for programs
+with a lot of user input.
