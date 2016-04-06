@@ -132,9 +132,12 @@ int countholes(node_sorted_t *memfree, int memsize){
 	if (tempmem->memsize == 0){
 		return 0;
 	}
-	while(memfree != NULL){
+	while(memfree != NULL && tempmem->memsize != 0){
 		count += 1;
 		memfree = memfree->next;
+		if (memfree != NULL){
+			tempmem = memfree->data;
+		}
 	}
 	return count;
 }

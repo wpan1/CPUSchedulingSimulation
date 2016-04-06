@@ -66,7 +66,7 @@ void multi(node_t *processlist, int memsize){
 					break;
 				}
 				// If not currently in physical memory, find space
-				if (!ll_find(phmem,runningprocess)){
+				if (ll_find(phmem,runningprocess) == 0){
 					// No space available, free up some memory
 					while(find_firstfit(memfree, runningprocess) == -1){
 						process_t *largest = ll_removelargest_process(phmem);
@@ -108,7 +108,7 @@ void multi(node_t *processlist, int memsize){
 					break;
 				}
 				// If not currently in physical memory, find space
-				if (!ll_find(phmem,runningprocess)){
+				if (ll_find(phmem,runningprocess) == 0){
 					// No space available, free up some memory
 					while(find_firstfit(memfree, runningprocess) == -1){
 						process_t *largest = ll_removelargest_process(phmem);

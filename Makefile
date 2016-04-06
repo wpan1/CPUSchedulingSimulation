@@ -36,11 +36,11 @@ clobber: clean
 
 ## Dependencies
 
-multi.o:				fcfs.h
-fcfs.o:					memoryfree.h
-memoryfree.o:			memoryfree.h sortedlinkedlist.h
-process.o:				process.h
-linkedlist.o: 			linkedlist.h process.h
-sortedlinkedlist.o: 	sortedlinkedlist.h
-input.o:				input.h
-main.o:					input.h linkedlist.h process.h memoryfree.h
+multi.o:				multi.c fcfs.h memoryfree.h sortedlinkedlist.h input.h
+fcfs.o:					fcfs.c fcfs.h memoryfree.h sortedlinkedlist.h input.h
+memoryfree.o:			memoryfree.c memoryfree.h sortedlinkedlist.h
+process.o:				process.c process.h
+linkedlist.o: 			linkedlist.c linkedlist.h process.h
+sortedlinkedlist.o: 	sortedlinkedlist.c process.h memoryfree.h
+input.o:				input.c input.h linkedlist.h process.h
+main.o:					main.c fcfs.h memoryfree.h sortedlinkedlist.h input.h

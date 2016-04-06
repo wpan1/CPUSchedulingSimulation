@@ -3,9 +3,9 @@ wpan1
 694945
 Computer Systems COMP30023 - Project One
 
-------------------------------------------------------------
+--------------------------------------------------------------
 First Come First Serve
-	
+
 Summary: Since processes are added on a queue basis and
 they run until finish, there will always only be one process
 in memory at one time. (non-preemptive)
@@ -33,3 +33,50 @@ As this simulation shows, short processes (2,3,4) have to wait
 until the long process (1) finishes. Thus, the FCFS scheduler
 has a long average wait time - making it useless for programs
 with a lot of user input.
+--------------------------------------------------------------
+Multi-Level Feedback Queue
+
+Summary: The multiple levels allow for shorter processes to
+complete without waiting for longer processes to finish. Longer
+processes are put into lower priorities so they don't hog CPU
+time.
+
+Advantages: Preemptive nature of the algorithm gives every
+shorter jobs an overall higher priority as they finish before
+being pushed to a lower priority.
+
+Disadvantages: If a large job has a high priority, it make take
+a long time to finish if there is an influx of low burst time
+processes.
+
+0 1 50 100
+0 2 20 2
+0 3 20 2
+0 4 20 2
+time 0, 1 running, numprocesses=1, numholes=1, memuseage=50%
+time 2, 2 running, numprocesses=2, numholes=1, memuseage=70%
+time 4, 3 running, numprocesses=2, numholes=1, memuseage=70%
+time 6, 4 running, numprocesses=2, numholes=1, memuseage=70%
+time 8, 1 running, numprocesses=1, numholes=1, memuseage=50%
+...
+time 100, 1 running, numprocesses=1, numholes=1, memuseage=50%
+time 106, simulation finished
+
+If this simulation was expanded to have an even larger influx of
+short processes (2,3,4), the long process (1) would have to
+wait until all processes finish before proceeding. Therefore,
+despit its priority, it would be the slowest to finish.
+--------------------------------------------------------------
+Memory Mangement - First Fit Algorithm
+
+Summary: First Fit Algorithm places processes into the first
+available space
+
+Advantages: Allocations into memory are as quick as possible.
+Fastest out of all fitting algorithms.
+
+Disadvantages: In some cases,
+
+
+
+

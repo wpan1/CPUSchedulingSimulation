@@ -37,8 +37,7 @@ Add a memory node to list
 void memnode_add(node_sorted_t *head, void *data){
 	// Add to list
 	memory_t *memdata = (memory_t*)data;
-	int memaddr = memdata->memaddr;
-	sll_add(head, memaddr, data);
+	sll_add(head, memdata->memaddr, data);
 	// Merge nodes that are adjacent
 	mergeholes(head);
 }
@@ -63,23 +62,7 @@ void mergeholes(node_sorted_t *head){
 			node_sorted_t *temp = curr;
 			prevdata->memsize += currdata->memsize;
 			prevdata->memaddr = currdata->memaddr;
-			prev->next = curr->next;
-			free(temp);
-			curr = prev->next;
-		}
-		else{
-			prev = curr;
-			curr = curr->next;
-		}
-	}
-	// Find empty nodes
-	curr = head->next, prev = head;
-	while(curr != NULL){
-		// Remove nodes with memory size as 0
-		memory_t *prevdata = (memory_t*)prev->data;
-		memory_t *currdata = (memory_t*)curr->data;
-		if (currdata->memsize == 0){
-			node_sorted_t *temp = curr;
+			prev->sortval = curr->sortval;
 			prev->next = curr->next;
 			free(temp);
 			curr = prev->next;
@@ -96,14 +79,12 @@ Remove node from free memory
 */
 void memnode_remove(node_sorted_t *head, void *data){
 	// Convert data to usable type
-	node_sorted_t *curr = head, *prev = head;
+	node_sorted_t *curr = head, *prev = NULL;
 	memory_t *memdata = (memory_t*)data;
 	int memaddr = memdata->memaddr;
 	// Find where in memory the node is to be removed
-	while(curr->next != NULL){
-		if (curr->next->sortval <= memaddr){
-			curr = curr->next;
-			prev = curr;
+	while(curr != NULL){
+		if (curr->sortval == memaddr){
 			break;
 		}
 		curr = curr->next;
@@ -120,6 +101,11 @@ void memnode_remove(node_sorted_t *head, void *data){
 		curr->data = node1;
 		curr->sortval = node1->memaddr;
 		//sll_add(head, node2->memaddr, node2); 
+		mergeholes(head);
+		return;
+	}
+	if (prev == NULL){
+		curr->data = node1;
 		mergeholes(head);
 		return;
 	}

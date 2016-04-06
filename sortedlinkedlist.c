@@ -14,7 +14,7 @@ node_sorted_t* sll_create(){
 		exit(1);
 	}
     // Populate values
-	head->sortval = NULL;
+	head->sortval = -1;
     head->data= NULL;
 	head->next = NULL;
 	return head;
@@ -140,7 +140,8 @@ void sll_print_memory(node_sorted_t *head){
     while(head!=NULL){
         memory_t *printProcess = (memory_t*)head->data;
         printf("memsize: %d ",printProcess->memsize);
-        printf("memaddr: %d",printProcess->memaddr);
+        printf("memaddr: %d ",printProcess->memaddr);
+        printf("sortval: %d",head->sortval);
         printf("\n");
         head=head->next;
     }
