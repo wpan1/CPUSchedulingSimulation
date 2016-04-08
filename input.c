@@ -1,6 +1,7 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        <string.h>
+#include 		<getopt.h>
 #include        "input.h"
 #include        "process.h"
 
