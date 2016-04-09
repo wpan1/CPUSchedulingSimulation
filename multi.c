@@ -32,7 +32,7 @@ void multi(node_t *processlist, int memsize){
 	countholes(memfree, memsize),
 	memusage(memfree, memsize));
 
-	while (runningprocess != NULL){
+	while (runningprocess != NULL || processlist->data != NULL){
 		if (processlist->data != NULL){
 			process = (process_t*)ll_get(processlist);
 		}
@@ -50,6 +50,24 @@ void multi(node_t *processlist, int memsize){
 		}
 		// Step counter
 		step += 1;
+		// Handle gaps in processes (No process to run)
+		if (runningprocess == NULL){
+			runningprocess = next_process(plevel1,plevel2,plevel3);
+			if (runningprocess == NULL){
+				continue;
+			}
+			// If not currently in physical memory, find space
+			if (ll_find(phmem,runningprocess) == 0){
+				// No space available, free up some memory
+				while(find_firstfit(memfree, runningprocess, memsize) == -1){
+					process_t *largest = ll_removelargest_process(phmem);
+					memnode_add(memfree, memnode_create(largest->memsize, largest->memaddr));
+				}
+				runningprocess->memaddr = find_firstfit(memfree,runningprocess, memsize);
+				ll_add_last(phmem, runningprocess);
+				memnode_remove(memfree, memnode_create(runningprocess->memsize, runningprocess->memaddr));
+			}
+		}
 		if (runningprocess != NULL){
 			// Decrement Quantum
 			runningprocess->qtimeleft -= 1;
@@ -63,16 +81,16 @@ void multi(node_t *processlist, int memsize){
 				runningprocess = next_process(plevel1,plevel2,plevel3);
 				// If none left, finish simulation
 				if (runningprocess == NULL){
-					break;
+					continue;
 				}
 				// If not currently in physical memory, find space
 				if (ll_find(phmem,runningprocess) == 0){
 					// No space available, free up some memory
-					while(find_firstfit(memfree, runningprocess) == -1){
+					while(find_firstfit(memfree, runningprocess, memsize) == -1){
 						process_t *largest = ll_removelargest_process(phmem);
 						memnode_add(memfree, memnode_create(largest->memsize, largest->memaddr));
 					}
-					runningprocess->memaddr = find_firstfit(memfree,runningprocess);
+					runningprocess->memaddr = find_firstfit(memfree,runningprocess, memsize);
 					ll_add_last(phmem, runningprocess);
 					memnode_remove(memfree, memnode_create(runningprocess->memsize, runningprocess->memaddr));
 				}
@@ -104,17 +122,17 @@ void multi(node_t *processlist, int memsize){
 				}
 				// Swap processes, if none remaining, end simulation
 				runningprocess = next_process(plevel1,plevel2,plevel3);
-				if (runningprocess == NULL){
-					break;
+				if (runningprocess == NULL ){
+					continue;
 				}
 				// If not currently in physical memory, find space
 				if (ll_find(phmem,runningprocess) == 0){
 					// No space available, free up some memory
-					while(find_firstfit(memfree, runningprocess) == -1){
+					while(find_firstfit(memfree, runningprocess, memsize) == -1){
 						process_t *largest = ll_removelargest_process(phmem);
 						memnode_add(memfree, memnode_create(largest->memsize, largest->memaddr));
 					}
-					runningprocess->memaddr = find_firstfit(memfree,runningprocess);
+					runningprocess->memaddr = find_firstfit(memfree,runningprocess, memsize);
 					ll_add_last(phmem, runningprocess);
 					memnode_remove(memfree, memnode_create(runningprocess->memsize, runningprocess->memaddr));
 				}

@@ -79,7 +79,7 @@ Remove node from free memory
 */
 void memnode_remove(node_sorted_t *head, void *data){
 	// Convert data to usable type
-	node_sorted_t *curr = head, *prev = NULL;
+	node_sorted_t *curr = head, *prev = head;
 	memory_t *memdata = (memory_t*)data;
 	int memaddr = memdata->memaddr;
 	// Find where in memory the node is to be removed
@@ -104,12 +104,13 @@ void memnode_remove(node_sorted_t *head, void *data){
 		mergeholes(head);
 		return;
 	}
-	if (prev == NULL){
+	if (prev == curr){
+		curr->sortval = node1->memaddr;
 		curr->data = node1;
 		mergeholes(head);
 		return;
 	}
-	prev->next = curr->next;		
+	prev->next = curr->next;	
 	free(curr);
 	sll_add(head, node1->memaddr, node1); 
 	//sll_add(head, node2->memaddr, node2); 

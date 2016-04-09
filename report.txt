@@ -75,7 +75,29 @@ available space
 Advantages: Allocations into memory are as quick as possible.
 Fastest out of all fitting algorithms.
 
-Disadvantages: In some cases,
+Disadvantages: In some cases, the algorithm places memory in
+sub-optimal places.
+
+0 1 20 3
+1 2 70 100
+2 3 10 4
+9 4 10 3
+14 5 20 3
+...
+time 7, 2 running, numprocesses=2, numholes=0, memuseage=80%
+time 11, 4 running, numprocesses=3, numholes=0, memuseage=90%
+time 13, 3 running, numprocesses=3, numholes=0, memuseage=90%
+time 15, 5 running, numprocesses=2, numholes=1, memuseage=30%
+time 17, 4 running, numprocesses=2, numholes=1, memuseage=30%
+time 18, 5 running, numprocesses=1, numholes=2, memuseage=20%
+time 19, 2 running, numprocesses=1, numholes=1, memuseage=70%
+...
+For example, a process (pid:4,size:10) is placed into a hole with
+size 20, even though a hole with size 10 is available. This leaves
+the memory with two non-adjacent holes of size 10. When another
+process (pid:5,size:20) needs memory, the larger process
+(pid:2,size:70) is removed despite the fact that all three processes
+(2,4,5) could all fit in memory at the same time.
 
 
 

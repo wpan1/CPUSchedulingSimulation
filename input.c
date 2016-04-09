@@ -1,13 +1,14 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        <string.h>
+#include 		<getopt.h>
 #include        "input.h"
 #include        "process.h"
 
 /* Extern declarations: */
 
-extern  int     optind;
-extern  char    *optarg;
+//extern  int     optind;
+//extern  char    *optarg;
 
 int getinputargs(int argc, char** argv, char **filename, char **schedalg, int *memsize)
 {
@@ -50,6 +51,11 @@ int getinputargs(int argc, char** argv, char **filename, char **schedalg, int *m
 					// should not get here
           
 			case 'm':
+				if (atoi(optarg) == 0){
+					// exit if optarg invalid
+					fprintf(stderr, "Memory size is not an int\n ");
+					exit(1);
+				}
 				// set the value of size (int value) based on optarg
 				*memsize = atoi(optarg);
 				break;
@@ -74,7 +80,12 @@ node_t *getinputfile(char *filename){
 	int threadinput[4];
 	// Open file with only read permissions
 	FILE *fp;
-	fp = fopen (filename, "r");
+	fp = fopen(filename, "r");
+	if (fp == NULL){
+		// exit if file not found
+		fprintf(stderr, "%s not found\n ", filename);
+		exit(1);
+	}
 	// Read and add to list
 	while(fscanf(fp,"%d %d %d %d\n",&threadinput[0],&threadinput[1],&threadinput[2],&threadinput[3]) > 0){
 		ll_add_last(processlist, createprocess(threadinput[1], threadinput[0], threadinput[3], threadinput[2],-1));

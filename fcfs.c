@@ -22,7 +22,7 @@ void fcfs(node_t *processlist, int memsize){
 	countholes(memfree, memsize),
 	memusage(memfree, memsize));
 
-	while (runningprocess != NULL || waitingprocc->data != NULL){
+	while (runningprocess != NULL || processlist->data != NULL){
 		if (processlist->data != NULL){
 			process = (process_t*)ll_get(processlist);
 		}
@@ -39,11 +39,29 @@ void fcfs(node_t *processlist, int memsize){
 		}
 		// Step counter
 		step += 1;
+		// Handle gaps in processes (No process to run)
+		if (runningprocess == NULL){
+			runningprocess = ll_pop(waitingprocc);
+			if (runningprocess == NULL){
+				continue;
+			}
+			// If not currently in physical memory, find space
+			if (ll_find(phmem,runningprocess) == 0){
+				// No space available, free up some memory
+				while(find_firstfit(memfree, runningprocess,memsize) == -1){
+					process_t *largest = ll_removelargest_process(phmem);
+					memnode_add(memfree, memnode_create(largest->memsize, largest->memaddr));
+				}
+				runningprocess->memaddr = find_firstfit(memfree,runningprocess,memsize);
+				ll_add_last(phmem, runningprocess);
+				memnode_remove(memfree, memnode_create(runningprocess->memsize, runningprocess->memaddr));
+			}
+		}
 		if (runningprocess != NULL){
 			// If not currently in physical memory, find space
 			if (!ll_find(phmem,runningprocess)){
 				// No space available, free up some memory
-				while(!find_firstfit(memfree, runningprocess)){
+				while(!find_firstfit(memfree, runningprocess,memsize)){
 					process_t *largest = ll_removelargest_process(phmem);
 					memnode_add(memfree, memnode_create(largest->memsize, largest->memaddr));
 				}
@@ -59,7 +77,7 @@ void fcfs(node_t *processlist, int memsize){
 			if (waitingprocc->data != NULL){
 				runningprocess = ll_pop(waitingprocc);
 				// Find free address
-				int memaddr = find_firstfit(memfree,process);
+				int memaddr = find_firstfit(memfree,process,memsize);
 				// If space available
 				if (memaddr != -1){
 					runningprocess->memaddr = memaddr;
@@ -71,11 +89,11 @@ void fcfs(node_t *processlist, int memsize){
 				// If space not availabe
 				else{
 					// No space available, free up some memory
-					while(find_firstfit(memfree, runningprocess) == -1){
+					while(find_firstfit(memfree, runningprocess,memsize) == -1){
 						process_t *largest = ll_removelargest_process(phmem);
 						memnode_add(memfree, memnode_create(largest->memsize, largest->memaddr));
 					}
-					runningprocess->memaddr = find_firstfit(memfree, runningprocess);
+					runningprocess->memaddr = find_firstfit(memfree, runningprocess,memsize);
 					ll_add_last(phmem, runningprocess);
 				}
 				// Print debug info
@@ -98,9 +116,15 @@ void fcfs(node_t *processlist, int memsize){
 /*
 Find the first space where a process can fit into memory
 */
-int find_firstfit(node_sorted_t *memfree, process_t *process){
+int find_firstfit(node_sorted_t *memfree, process_t *process, int memsize){
+	memory_t *memnode = memfree->data;
+	if (memnode->memsize > memsize){
+		// Not enough physical memory
+		fprintf(stderr, "Not enough physical memory for process\n ");
+		exit(1);
+	}
 	while(memfree != NULL){
-		memory_t *memnode = memfree->data;
+		memnode = memfree->data;
 		if (memnode->memsize >= process->memsize){
 			return memnode->memaddr;
 		}
