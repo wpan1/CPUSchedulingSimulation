@@ -18,7 +18,7 @@ CFLAGS 	= -Wall
 
 SRC =		main.c input.c linkedlist.c sortedlinkedlist.c process.c memoryfree.c fcfs.c multi.c
 OBJ =		main.o input.o linkedlist.o sortedlinkedlist.o process.o memoryfree.o fcfs.o multi.o
-EXE = 		proj1
+EXE = 		simulation
 
 ## Top level target is executable.
 $(EXE):	$(OBJ)

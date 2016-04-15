@@ -8,19 +8,7 @@ void fcfs(node_t *processlist, int memsize){
 	node_t *phmem = ll_create();
 	node_t *waitingprocc = ll_create();
 	process_t *process = (process_t*)ll_get(processlist);
-	process_t *runningprocess = (process_t*)ll_pop(processlist);
-	// Start when first process enters memory
-	step = process->timecreated;
-	runningprocess->memaddr = 0;
-	memnode_remove(memfree,memnode_create(runningprocess->memsize,runningprocess->memaddr));
-	ll_add_last(phmem,process);
-	// Print debug info
-	printf("time %d, %d running, numprocesses=%d, numholes=%d, memuseage=%d%%\n",
-	step,
-	runningprocess->PID,
-	mem_processes(phmem),
-	countholes(memfree, memsize),
-	memusage(memfree, memsize));
+	process_t *runningprocess = NULL;
 
 	while (runningprocess != NULL || processlist->data != NULL){
 		if (processlist->data != NULL){
@@ -37,12 +25,12 @@ void fcfs(node_t *processlist, int memsize){
 				break;
 			}
 		}
-		// Step counter
-		step += 1;
 		// Handle gaps in processes (No process to run)
 		if (runningprocess == NULL){
 			runningprocess = ll_pop(waitingprocc);
+			// Premature finish
 			if (runningprocess == NULL){
+				step += 1;
 				continue;
 			}
 			// If not currently in physical memory, find space
@@ -56,8 +44,15 @@ void fcfs(node_t *processlist, int memsize){
 				ll_add_last(phmem, runningprocess);
 				memnode_remove(memfree, memnode_create(runningprocess->memsize, runningprocess->memaddr));
 			}
+			// Print debug info
+			printf("time %d, %d running, numprocesses=%d, numholes=%d, memusage=%d%%\n",
+			step,
+			runningprocess->PID,
+			mem_processes(phmem),
+			countholes(memfree, memsize),
+			memusage(memfree, memsize));
 		}
-		if (runningprocess != NULL){
+		else if (runningprocess != NULL){
 			// If not currently in physical memory, find space
 			if (!ll_find(phmem,runningprocess)){
 				// No space available, free up some memory
@@ -97,7 +92,7 @@ void fcfs(node_t *processlist, int memsize){
 					ll_add_last(phmem, runningprocess);
 				}
 				// Print debug info
-				printf("time %d, %d running, numprocesses=%d, numholes=%d, memuseage=%d%%\n",
+				printf("time %d, %d running, numprocesses=%d, numholes=%d, memusage=%d%%\n",
 				step,
 				runningprocess->PID,
 				mem_processes(phmem),
@@ -109,8 +104,10 @@ void fcfs(node_t *processlist, int memsize){
 				runningprocess = NULL;
 			}
 		}
+		// Step counter
+		step += 1;
 	}
-	printf("time %d, simulation finished",step);
+	printf("time %d, simulation finished.", step-1);
 }
 
 /*
@@ -156,12 +153,12 @@ int countholes(node_sorted_t *memfree, int memsize){
 	if (tempmem->memsize == 0){
 		return 0;
 	}
-	while(memfree != NULL && tempmem->memsize != 0){
-		count += 1;
-		memfree = memfree->next;
-		if (memfree != NULL){
-			tempmem = memfree->data;
+	while(memfree != NULL){
+		tempmem = memfree->data;
+		if (memfree->data != NULL && tempmem->memsize != 0){
+			count += 1;
 		}
+		memfree = memfree->next;
 	}
 	return count;
 }

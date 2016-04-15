@@ -14,25 +14,10 @@ void multi(node_t *processlist, int memsize){
 	node_t *plevel2 = ll_create();
 	node_t *plevel3 = ll_create();
 	process_t *process = (process_t*)ll_get(processlist);
-	process_t *runningprocess = (process_t*)ll_pop(processlist);
-
-
-	// Start when first process enters memory
-	runningprocess->qtimeleft = Q1;
-	step = process->timecreated;
-	runningprocess->memaddr = 0;
-	memnode_remove(memfree,memnode_create(runningprocess->memsize,runningprocess->memaddr));
-	ll_add_last(phmem,process);
-	ll_add_last(plevel1,process);
-	// Print debug info
-	printf("time %d, %d running, numprocesses=%d, numholes=%d, memuseage=%d%%\n",
-	step,
-	runningprocess->PID,
-	mem_processes(phmem),
-	countholes(memfree, memsize),
-	memusage(memfree, memsize));
+	process_t *runningprocess = NULL;
 
 	while (runningprocess != NULL || processlist->data != NULL){
+		// Get next process to run
 		if (processlist->data != NULL){
 			process = (process_t*)ll_get(processlist);
 		}
@@ -48,12 +33,12 @@ void multi(node_t *processlist, int memsize){
 				break;
 			}
 		}
-		// Step counter
-		step += 1;
 		// Handle gaps in processes (No process to run)
 		if (runningprocess == NULL){
 			runningprocess = next_process(plevel1,plevel2,plevel3);
+			// Premature step
 			if (runningprocess == NULL){
+				step += 1;
 				continue;
 			}
 			// If not currently in physical memory, find space
@@ -67,8 +52,15 @@ void multi(node_t *processlist, int memsize){
 				ll_add_last(phmem, runningprocess);
 				memnode_remove(memfree, memnode_create(runningprocess->memsize, runningprocess->memaddr));
 			}
+			// Print debug info
+			printf("time %d, %d running, numprocesses=%d, numholes=%d, memusage=%d%%\n",
+			step,
+			runningprocess->PID,
+			mem_processes(phmem),
+			countholes(memfree, memsize),
+			memusage(memfree, memsize));
 		}
-		if (runningprocess != NULL){
+		else if (runningprocess != NULL){
 			// Decrement Quantum
 			runningprocess->qtimeleft -= 1;
 			runningprocess->jobtime -= 1;
@@ -79,8 +71,9 @@ void multi(node_t *processlist, int memsize){
 				remove_plevel(plevel1,plevel2,plevel3,runningprocess);
 				// Swap to next process
 				runningprocess = next_process(plevel1,plevel2,plevel3);
-				// If none left, finish simulation
+				// Premature step
 				if (runningprocess == NULL){
+					step += 1;
 					continue;
 				}
 				// If not currently in physical memory, find space
@@ -95,7 +88,7 @@ void multi(node_t *processlist, int memsize){
 					memnode_remove(memfree, memnode_create(runningprocess->memsize, runningprocess->memaddr));
 				}
 				// Print debug info
-				printf("time %d, %d running, numprocesses=%d, numholes=%d, memuseage=%d%%\n",
+				printf("time %d, %d running, numprocesses=%d, numholes=%d, memusage=%d%%\n",
 				step,
 				runningprocess->PID,
 				mem_processes(phmem),
@@ -122,7 +115,9 @@ void multi(node_t *processlist, int memsize){
 				}
 				// Swap processes, if none remaining, end simulation
 				runningprocess = next_process(plevel1,plevel2,plevel3);
+				// Premature Step
 				if (runningprocess == NULL ){
+					step += 1;
 					continue;
 				}
 				// If not currently in physical memory, find space
@@ -137,7 +132,7 @@ void multi(node_t *processlist, int memsize){
 					memnode_remove(memfree, memnode_create(runningprocess->memsize, runningprocess->memaddr));
 				}
 				// Print debug info
-				printf("time %d, %d running, numprocesses=%d, numholes=%d, memuseage=%d%%\n",
+				printf("time %d, %d running, numprocesses=%d, numholes=%d, memusage=%d%%\n",
 				step,
 				runningprocess->PID,
 				mem_processes(phmem),
@@ -145,8 +140,11 @@ void multi(node_t *processlist, int memsize){
 				memusage(memfree, memsize));
 			}
 		}
+		// Step counter
+		step += 1;
 	}
-	printf("time %d, simulation finished",step);
+	// Step - 1 since, the simulation finishes on the previous step
+	printf("time %d, simulation finished.\n",step-1);
 }
 
 /*
