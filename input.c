@@ -25,7 +25,7 @@ int getinputargs(int argc, char** argv, char **filename, char **schedalg, int *m
 	         s option is used to specify the size or the number of lines in the file (int)
 	 
 	*/
-	while ((input = getopt(argc, argv, "f:l:m:")) != EOF)
+	while ((input = getopt(argc, argv, "f:a:m:")) != EOF)
 	{
 		switch ( input )
 		{
@@ -34,7 +34,7 @@ int getinputargs(int argc, char** argv, char **filename, char **schedalg, int *m
 				*filename = optarg;
 				break;
 
-			case 'l':
+			case 'a':
 				if(strcmp(optarg, "fcfs") == 0) 
 					*schedalg  = optarg;
 

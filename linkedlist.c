@@ -190,23 +190,8 @@ void ll_print_process(node_t *head){
     }
     while(head!=NULL){
     	process_t *printProcess = (process_t*)head->data;
-    	printf("%d ",printProcess->PID);
+    	printf("pmemsize: %d pmemaddr: %d",printProcess->memsize,printProcess->memaddr);
     	head=head->next;
+        printf("\n");
     }
-    printf("\n");
-}
-
-/*
-Print sorted linked list, for memory_t nodes
-*/
-void ll_print_memory(node_t *head){
-    if(head->data == NULL){
-    	return;
-    }
-    while(head!=NULL){
-    	process_t *printProcess = (process_t*)head->data;
-    	printf("%d ",printProcess->memsize);
-    	head=head->next;
-    }
-    printf("\n");
 }

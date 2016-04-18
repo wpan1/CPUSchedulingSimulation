@@ -37,6 +37,11 @@ Add a memory node to list
 void memnode_add(node_sorted_t *head, void *data){
 	// Add to list
 	memory_t *memdata = (memory_t*)data;
+	// Edge cases where memory size is 0
+	if (memdata->memsize == 0){
+		// Do nothing
+		return;
+	}
 	sll_add(head, memdata->memaddr, data);
 	// Merge nodes that are adjacent
 	mergeholes(head);
@@ -81,6 +86,11 @@ void memnode_remove(node_sorted_t *head, void *data){
 	// Convert data to usable type
 	node_sorted_t *curr = head, *prev = head;
 	memory_t *memdata = (memory_t*)data;
+	// Edge cases where memory size is 0
+	if (memdata->memsize == 0){
+		// Do nothing
+		return;
+	}
 	int memaddr = memdata->memaddr;
 	// Find where in memory the node is to be removed
 	while(curr != NULL){

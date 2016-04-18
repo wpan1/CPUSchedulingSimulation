@@ -107,7 +107,7 @@ void fcfs(node_t *processlist, int memsize){
 		// Step counter
 		step += 1;
 	}
-	printf("time %d, simulation finished.", step-1);
+	printf("time %d, simulation finished.\n", step-1);
 }
 
 /*
@@ -150,9 +150,6 @@ Returns the number of holes in memory
 int countholes(node_sorted_t *memfree, int memsize){
 	int count = 0;
 	memory_t *tempmem = memfree->data;
-	if (tempmem->memsize == 0){
-		return 0;
-	}
 	while(memfree != NULL){
 		tempmem = memfree->data;
 		if (memfree->data != NULL && tempmem->memsize != 0){
